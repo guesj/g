@@ -1,0 +1,164 @@
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+
+     
+requestAnimationFrame(mainLoop);
+const w = canvas.width;
+const h= canvas.height;
+const ctx = canvas.getContext("2d");
+
+function drawLabledLine(label, x, y, x1, y1, fontSize = 12) {
+    ctx.font = fontSize + "px arial";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = ctx.strokeStyle = "black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle"; // Rather than mess around with this
+                                 // I use the same alignment and just change the
+                                 // position to put the text where it is needed
+  
+    // normalize line
+    var nx = x1 - x;
+    var ny = y1 - y;
+    const dist = (nx * nx + ny * ny) ** 0.5;
+    nx /= dist;
+    ny /= dist;
+    
+    // set the transform
+    ctx.setTransform(nx, ny, -ny, nx, x, y);
+    
+    // The transformed is now aligned to the line. Along the line is X and 
+    // 90 deg clockwise is right of the line
+    
+    ctx.beginPath();
+    ctx.lineTo(0, 0);
+    ctx.lineTo(dist, 0);
+    ctx.lineTo(dist - 4, -4);
+    ctx.stroke();
+
+
+    var offset = -fontSize * 0.6;
+    var distAlong = dist / 2; /// where to put the line
+    
+    // Use the normal's of the line to workout how
+    // to render the text so it is always readable
+    if (nx < 0) {
+       ctx.setTransform(-nx, -ny, ny, -nx, x, y);
+       offset = -offset;
+       distAlong = - distAlong;
+    }
+    ctx.fillText(label, distAlong, offset);
+
+}
+
+
+function drawLabledLineTextHor(label, x, y, x1, y1, fontSize = 12) {
+
+    ctx.font = fontSize + "px arial";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = ctx.strokeStyle = "black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle"; // Rather than mess around with this
+                                 // I use the same alignment and just change the
+                                 // position to put the text where it is needed
+  
+    // normalize line
+    var nx = x1 - x;
+    var ny = y1 - y;
+    const dist = (nx * nx + ny * ny) ** 0.5;
+    nx /= dist;
+    ny /= dist;
+    
+    // set the transform
+    ctx.setTransform(nx, ny, -ny, nx, x, y);
+    
+    // The transformed is now aligned to the line. Along the line is X and 
+    // 90 deg clockwise is right of the line
+    
+    ctx.beginPath();
+    ctx.lineTo(0, 0);
+    ctx.lineTo(dist, 0);
+    ctx.lineTo(dist - 4, -4);
+    ctx.stroke();
+
+
+    // need the text width so that the text can be moved away from the line
+    const textW = ctx.measureText(label).width;
+    
+    // Offset a little more than half the font size to stop text from
+    // touching (top and (bottom if hanging char eg `jgq`))
+    var offset = -fontSize * 0.575 - (textW / 2 * -ny) * (-ny < 0 ? -1 : 1);
+    var distAlong = dist / 2; // where along the line to move out from (left)
+                              // to place the text
+    
+    // Show center line 
+    ctx.lineWidth = 0.25;
+    ctx.beginPath();
+    ctx.lineTo(dist / 2, 5);
+    ctx.lineTo(dist / 2, offset + fontSize / 2 );
+    ctx.stroke();
+    
+    
+    // set transform origin to center of line
+    ctx.setTransform(
+        1, 0,  // x Axis
+        0, 1,  // y Axis
+        x + nx * distAlong, // origin
+        y + ny * distAlong,
+     );
+    
+    // The vector -ny,nx is CW (right of the line) so the offset is negative
+    // to that direction as we want to move left of the line
+    ctx.fillText(label, -ny * offset, nx * offset);
+
+}
+
+const points = [
+    {x: -40, y: -40, tx: 0, ty: 0}, // tx,ty is tranformed pos
+    {x:  40, y: -40, tx: 0, ty: 0},
+    {x:  40, y:  40, tx: 0, ty: 0},
+    {x: -40, y:  40, tx: 0, ty: 0},
+];
+const lines = [
+    {txt: "A", p1: points[0], p2: points[1], method: drawLabledLine},
+    {txt: "B", p1: points[1], p2: points[2], method: drawLabledLineTextHor},
+    {txt: "Line C", p1: points[2], p2: points[3], method: drawLabledLine},
+    {txt: "Line D", p1: points[3], p2: points[0], method: drawLabledLineTextHor},
+]
+
+function mainLoop(time) {
+    ctx.setTransform(1,0,0,1,0,0); // default transform
+    ctx.clearRect(0,0,w,h);
+    var ang = time / 1000;
+
+    // rotate and move to center of canvas all points
+    const xAx = Math.cos(ang);
+    const xAy = Math.sin(ang);
+    for (const p of points) {
+        p.tx = p.x * xAx - p.y * xAy + w / 2;
+        p.ty = p.x * xAy + p.y * xAx + h / 2;
+    }
+ 
+    // render the lines
+    for(const l of lines) {
+        l.method(l.txt, l.p1.tx, l.p1.ty, l.p2.tx, l.p2.ty);
+    }
+    requestAnimationFrame(mainLoop);
+}
+    </style>
+</head>
+<body>
+
+
+<canvas id="canvas" width="200" height="200"></canvas>
+
+
+<script>
+    // JavaScript code goes here
+  </script>
+  
+  </body>
+  </html>

@@ -1,0 +1,51 @@
+h3 {
+    color: crimson;
+}
+
+p {
+    color: purple;
+}
+
+.milista {
+    font-size: medium;
+    color: orange;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.miimage{
+    width: 100px;
+    height: 120px;
+    border-width: 20px;
+    border-color: crimson;
+    border-style: solid dashed dotted double ;
+}
+
+.borde-redondo{
+    border-radius: 50%;
+    width: 100px;
+    height: 90px;
+    border-style: solid;
+    border-color: darkgrey;
+}
+
+#Titulo{
+    font-size: 30px;
+    color: darkgray;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+
+img {
+    width: 20%;
+    height: 20%;
+    padding: 20px;
+
+    margin: 20px 15px 10px 5px;
+    border-width: 2px;
+    border-color: black;
+    border-style: solid;
+}
+
+div {
+    background-color: crimson;
+}
